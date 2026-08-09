@@ -1,0 +1,47 @@
+name: Deploy
+
+# Push-to-deploy for the golden-apple-blog EmDash site → Cloudflare Workers.
+# Build with Astro, deploy with the repo's own wrangler (v4) + the committed
+# wrangler.jsonc (D1 DB, R2 MEDIA, worker_loaders/LOADER sandbox, every-minute cron).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      # Public origin — improves sitemap/robots/JSON-LD at build time.
+      # (Also set EMDASH_SITE_URL as a wrangler `vars` for runtime passkeys/CSRF/OAuth.)
+      EMDASH_SITE_URL: https://www.golden-apple-research.org
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4 # reads packageManager = pnpm@11.9.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install
+        run: pnpm install
+        # TODO(repo): commit pnpm-lock.yaml, then switch to `pnpm install --frozen-lockfile`
+        # and add `cache: pnpm` to setup-node for reproducible, cacheable builds.
+
+      - name: Build
+        run: pnpm build
+
+      - name: Deploy to Cloudflare Workers
+        run: pnpm exec wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
