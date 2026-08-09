@@ -16,6 +16,10 @@
 			"bucket_name": "golden-apple-blog","preview_bucket_name": "golden-apple-blog",
 		},
 	],
+	// Public origin for emdash runtime: passkeys, CSRF origin, OAuth, sitemap, robots, JSON-LD
+	"vars": {
+		"EMDASH_SITE_URL": "https://www.golden-apple-research.org",
+	},
 	// Worker Loader for plugin sandboxing
 	"worker_loaders": [
 		{

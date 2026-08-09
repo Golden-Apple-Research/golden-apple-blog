@@ -18,8 +18,8 @@ jobs:
     permissions:
       contents: read
     env:
-      # Public origin — improves sitemap/robots/JSON-LD at build time.
-      # (Also set EMDASH_SITE_URL as a wrangler `vars` for runtime passkeys/CSRF/OAuth.)
+      # Build-time public origin (sitemaps/robots/JSON-LD). Runtime value comes
+      # from the `vars` block in wrangler.jsonc (EMDASH_SITE_URL).
       EMDASH_SITE_URL: https://www.golden-apple-research.org
     steps:
       - uses: actions/checkout@v4
@@ -31,11 +31,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: pnpm
 
       - name: Install
-        run: pnpm install
-        # TODO(repo): commit pnpm-lock.yaml, then switch to `pnpm install --frozen-lockfile`
-        # and add `cache: pnpm` to setup-node for reproducible, cacheable builds.
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build
