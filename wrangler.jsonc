@@ -1,0 +1,29 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "golden-apple-blog",
+	"main": "./src/worker.ts",
+	"compatibility_date": "2026-02-24",
+	"compatibility_flags": ["nodejs_compat"],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "golden-apple-blog","database_id": "0a89d075-c3cb-4d96-b1cc-4fbb17ad2d0b",
+		},
+	],
+	"r2_buckets": [
+		{
+			"binding": "MEDIA",
+			"bucket_name": "golden-apple-blog","preview_bucket_name": "golden-apple-blog",
+		},
+	],
+	// Worker Loader for plugin sandboxing
+	"worker_loaders": [
+		{
+			"binding": "LOADER",
+		},
+	],
+	// Drives scheduled publishing, plugin cron, and maintenance (see src/worker.ts)
+	"triggers": {
+		"crons": ["* * * * *"],
+	},
+}
