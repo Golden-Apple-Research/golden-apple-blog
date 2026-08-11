@@ -18,6 +18,16 @@ export default defineConfig({
 		emdash({
 			database: d1({ binding: "DB", session: "auto" }),
 			storage: r2({ binding: "MEDIA" }),
+			auth: access({
+   				teamDomain: CF_TEAM_DOMAIN,
+    			audience: CF_AUDIENCE_TAG,
+   				roleMapping: {
+		    		"Admins": 50,
+    				"Editors": 40,
+					"Members": 30,
+					"Restricted": 10,
+	    		},
+  			}),
 			plugins: [formsPlugin()],
 			sandboxed: [webhookNotifier],
 			sandboxRunner: sandbox(),
